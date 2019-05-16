@@ -15,6 +15,20 @@ router.post('/', validateUser, async (req, res) => {
     }
   });
 
+router.post('/:id/posts', async (req, res) => {
+    const message = { ...req.body, user_id: req.params.id };
+
+    try {
+        const post = await Posts.insert(message)
+        res.status(201).json(post);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Error posting message"
+        });
+    }
+});
+
 router.get('/', async (req, res) => {
     try {
         const users = await Users.get();
@@ -46,7 +60,7 @@ router.get('/:id', async (req, res) => {
 
 router.get('/:id/posts', async (req, res) => {
     try {
-        const posts = await Posts.getById(req.params.id);
+        const posts = await Users.getUserPosts(req.params.id);
 
         if (posts) {
             res.status(200).json(posts);
