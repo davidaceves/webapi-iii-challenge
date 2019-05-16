@@ -1,24 +1,19 @@
 const express = require('express');
+const router = express.Router();
 
 const Users = require('./userDb.js');
 const Posts = require('../posts/postDb.js');
 
-const router = express.Router();
-
-router.post('/', async (req, res) => {
+router.post('/', validateUser, async (req, res) => {
     try {
-        const user = await Users.insert(req.body);
-        res.status(201).json(user); 
-    } catch(error) {
+      const user = await Users.insert(req.body);
+      res.status(201).json(user);
+    } catch (error) {
         res.status(500).json({
             message: 'Error adding the user'
         })
     }
-});
-
-router.post('/:id/posts', async (req, res) => {
-
-});
+  });
 
 router.get('/', async (req, res) => {
     try {
@@ -67,13 +62,13 @@ function validateUserId(req, res, next) {
 
 };
 
-// function validateUser(req, res, next) {
-//     if (req.body && Object.keys(req.body).length) {
-//         next();
-//     } else {
-//         res.status(400).json({ message: "Missing user data"})
-//     }
-// };
+function validateUser(req, res, next) {
+    if (req.body) {
+        next();
+    } else {
+        res.status(400).json({ message: "Missing user data"})
+    }
+};
 
 function validatePost(req, res, next) {
 

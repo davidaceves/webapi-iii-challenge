@@ -1,14 +1,8 @@
 const express = require('express');
-
 const server = express();
 
-const userRouter = require('./users/userRouter.js'); 
-
-server.get('/', (req, res) => {
-  res.send(`<h2>Let's write some middleware!</h2>`)
-});
-
-server.use('/api/users', userRouter);
+const UserRouter = require('./users/userRouter.js');
+const PostRouter = require('./posts/postRouter.js')
 
 server.use(express.json());
 
@@ -22,5 +16,12 @@ function logger(req, res, next) {
   );
   next();
 };
+
+server.use('/api/users', UserRouter);
+server.use('/api/posts', PostRouter);
+
+server.get('/', (req, res) => {
+  res.send(`<h2>Let's write some middleware!</h2>`)
+});
 
 module.exports = server;
