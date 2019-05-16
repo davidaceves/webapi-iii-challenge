@@ -15,7 +15,7 @@ router.post('/', validateUser, async (req, res) => {
     }
   });
 
-router.post('/:id/posts', async (req, res) => {
+router.post('/:id/posts', validateUserId, async (req, res) => {
     const message = { ...req.body, user_id: req.params.id };
 
     try {
@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateUserId, async (req, res) => {
     try {
         const user = await Users.getById(req.params.id);
 
@@ -58,7 +58,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.get('/:id/posts', async (req, res) => {
+router.get('/:id/posts', validateUserId, async (req, res) => {
     try {
         const posts = await Users.getUserPosts(req.params.id);
 
@@ -75,7 +75,7 @@ router.get('/:id/posts', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateUserId, async (req, res) => {
     try {
         const user = await Users.remove(req.params.id);
         
@@ -92,7 +92,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateUserId, async (req, res) => {
     try {
         const user = await Users.update(req.params.id, req.body)
 
@@ -113,8 +113,25 @@ router.put('/:id', async (req, res) => {
 
 //custom middleware
 
-function validateUserId(req, res, next) {
+async function validateUserId(req, res, next) {
+    try {
 
+    const { id } = req.params;
+
+    const user = await Users.getById(id);
+
+    if (user) {
+        req.user = user;
+        next();
+    } else {
+        // next({ message: 'Invalid user id' })
+        res.status(404).json({ message: 'User not found; invalid id'});
+    }
+    } catch (error) {
+        res.status(500).json({
+            message: 'Failed to process request'
+        });
+    }
 };
 
 function validateUser(req, res, next) {
