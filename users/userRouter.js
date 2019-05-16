@@ -15,7 +15,7 @@ router.post('/', validateUser, async (req, res) => {
     }
   });
 
-router.post('/:id/posts', validateUserId, async (req, res) => {
+router.post('/:id/posts', validateUserId, validatePost, async (req, res) => {
     const message = { ...req.body, user_id: req.params.id };
 
     try {
@@ -143,7 +143,19 @@ function validateUser(req, res, next) {
 };
 
 function validatePost(req, res, next) {
+    const { text } = req.body;
 
+    if (text === '') {
+        res.status(400).json({
+            message: 'Missing required text field'
+        })
+    } else if (text) {
+        next();
+    } else  {
+        res.status(400).json({
+            message: 'Missing post data'
+        })
+    } 
 };
 
 module.exports = router;
