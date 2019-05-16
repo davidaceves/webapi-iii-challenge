@@ -40,12 +40,25 @@ router.get('/:id', async (req, res) => {
         console.log(error);
         res.status(500).json({
             message: 'Error retrieving the user'
-        })
+        });
     }
 });
 
 router.get('/:id/posts', async (req, res) => {
+    try {
+        const posts = await Posts.getById(req.params.id);
 
+        if (posts) {
+            res.status(200).json(posts);
+        } else {
+            res.status(404).json({ message: 'Posts not found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Error retrieving the posts'
+        });
+    }
 });
 
 router.delete('/:id', async (req, res) => {
