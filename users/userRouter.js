@@ -49,7 +49,20 @@ router.get('/:id/posts', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-
+    try {
+        const user = await Users.remove(req.params.id);
+        
+        if (user) {
+            res.status(200).json({ message: 'The user has been deleted'});
+        } else {
+            res.status(404).json({ message: 'The user could not be found'})
+        } 
+    } catch(error) {
+        console.log(error)
+        res.status(500).json({
+            message: 'Error removing the user.'
+        })
+    }
 });
 
 router.put('/:id', async (req, res) => {
